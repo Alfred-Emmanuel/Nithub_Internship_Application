@@ -3,12 +3,12 @@ import * as crypto from "node:crypto";
 import * as jwt from "jsonwebtoken";
 import { IJwtData } from "../types";
 
-import { Encryptor } from "../../app";
+// import { Encryptor } from "../../app";
 import { UnAuthorizedError, config, logger } from "../../core";
 import { AppMessages } from "../../common";
 
 export class TokenService {
-  constructor(private readonly encryptionService: Encryptor) {}
+  // constructor(private readonly encryptionService: Encryptor) {}
 
   async getTokens(data: IJwtData): Promise<string[]> {
     return await Promise.all([
@@ -17,28 +17,28 @@ export class TokenService {
     ]);
   }
 
-  async extractTokenDetails(tokenFromHeader: string, secret: string) {
-    // get the token from the bearer string.
-    const token = tokenFromHeader.split(" ").pop()!;
+  // async extractTokenDetails(tokenFromHeader: string, secret: string) {
+  //   // get the token from the bearer string.
+  //   const token = tokenFromHeader.split(" ").pop()!;
 
-    const decryptedToken = this.encryptionService.decrypt(token);
+  //   const decryptedToken = this.encryptionService.decrypt(token);
 
-    // verify the token
-    const tokenDetails = await this.verifyToken(decryptedToken, secret);
+  //   // verify the token
+  //   const tokenDetails = await this.verifyToken(decryptedToken, secret);
 
-    // extract the token information
-    let tokenPayload = tokenDetails as jwt.JwtPayload;
-    let timeToExpiry = tokenPayload.exp as number;
+  //   // extract the token information
+  //   let tokenPayload = tokenDetails as jwt.JwtPayload;
+  //   let timeToExpiry = tokenPayload.exp as number;
 
-    return {
-      user: {
-        id: tokenDetails.id,
-        email: tokenDetails.email,
-      },
-      token,
-      expiration: new Date(timeToExpiry * 1000),
-    };
-  }
+  //   return {
+  //     user: {
+  //       id: tokenDetails.id,
+  //       email: tokenDetails.email,
+  //     },
+  //     token,
+  //     expiration: new Date(timeToExpiry * 1000),
+  //   };
+  // }
 
   /**
    * @description Verifies the token provided.
@@ -63,7 +63,8 @@ export class TokenService {
       expiresIn: config.auth.accessTokenExpiresIn,
     });
 
-    return this.encryptionService.encrypt(accessToken);
+    // return this.encryptionService.encrypt(accessToken);
+    return accessToken
   }
 
   private _generateRefreshToken(data: IJwtData): string {
@@ -73,7 +74,8 @@ export class TokenService {
       expiresIn: config.auth.refreshTokenExpiresIn,
     });
 
-    return this.encryptionService.encrypt(refreshToken);
+    // return this.encryptionService.encrypt(refreshToken);
+    return refreshToken
   }
 
   private _generateToken({

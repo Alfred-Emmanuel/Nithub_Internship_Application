@@ -2,12 +2,12 @@ import { Router, Request, Response } from "express";
 import { SignIn, SignUp } from "../../auth";
 import { RefreshToken, User } from "../models";
 import { TokenService } from "../../auth";
-import { Encryptor } from "../../app";
+// import { Encryptor } from "../../app";
 import { UnAuthorizedError } from "../../core";
 
 const authRouter = Router();
-const encryptor = new Encryptor();
-const tokenService = new TokenService(encryptor);
+// const encryptor = new Encryptor();
+const tokenService = new TokenService();
 
 const signIn = new SignIn(User, RefreshToken, tokenService);
 const signUp = new SignUp(User);
