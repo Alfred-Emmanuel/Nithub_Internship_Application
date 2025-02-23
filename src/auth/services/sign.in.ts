@@ -23,7 +23,7 @@ export class SignIn {
    * @param { Context<SignInPayload> } param
    * @returns
    */
-  handle = async ({ input }: Context<SignInPayload>) => {
+  handle = async (input: Context<SignInPayload>) => {
     const user = await this.users.findOne({ where: { email: input.email } });
 
     if (!user) {

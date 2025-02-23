@@ -1,5 +1,6 @@
 import { IncomingHttpHeaders } from "http";
 import "express";
+import { Request } from "express";
 import { Schema } from "joi";
 import { Readable } from "node:stream";
 import { IJwtData } from "../../../auth/types";
@@ -57,4 +58,17 @@ export interface IEMAIL {
   readonly email?: string;
   readonly subject?: string;
   readonly attachments?: Array<string>;
+}
+export interface AuthRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+  };
+}
+
+export interface IUser extends Request {
+  user?: {
+    id: string;
+    role: string;
+  };
 }

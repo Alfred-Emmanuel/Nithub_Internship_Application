@@ -37,8 +37,4 @@ RefreshToken.init(
 User.hasMany(RefreshToken, { foreignKey: "userId" });
 RefreshToken.belongsTo(User, { foreignKey: "userId" });
 
-sequelize.sync({ force: false }).then(() => {
-  console.log("Database synced");
-});
-
-export { RefreshToken }
+export { RefreshToken };

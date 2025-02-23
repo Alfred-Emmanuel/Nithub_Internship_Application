@@ -11,8 +11,10 @@ import { SignUpPayload } from "../types/payload";
 export class SignUp {
   constructor(public readonly userRepo: typeof User) {}
 
-  
-  handle = async ({ input }: Context<SignUpPayload>) => {
+  handle = async (input: Context<SignUpPayload>) => {
+    if (!input) {
+      throw new UnAuthorizedError(AppMessages.FAILURE.EMPTY_INPUT);
+    }
     const { email, password } = input;
 
     const existingUser = await this.userRepo.findOne({
@@ -27,7 +29,7 @@ export class SignUp {
 
     input.password = await PasswordHelper.hashData(password);
 
-    const createdUser = await this.userRepo.create(input);
+    const createdUser = await this.userRepo.create({ ...input });
 
     return {
       code: HttpStatusCodes.OK,

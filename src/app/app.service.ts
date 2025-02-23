@@ -4,8 +4,10 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import { config } from "../core";
+import { appRouter } from "./router";
 
 export const app = express();
+app.use(cors());
 
 if (
   config.app.environment.isInDevelopment ||
@@ -18,4 +20,4 @@ export const exp = app.use(express.json());
 app.use(helmet());
 app.disable("x-powered-by");
 app.use(compression());
-app.use(cors());
+app.use("/v1", appRouter);
