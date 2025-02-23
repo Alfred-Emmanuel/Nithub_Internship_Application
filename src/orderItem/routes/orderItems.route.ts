@@ -63,36 +63,6 @@ orderItemRouter.get(
 );
 
 /**
- * @route   POST /order-items
- * @desc    Add an item to the user's order
- * @access  User
- */
-orderItemRouter.post(
-  "/",
-  isAuthenticated,
-  async (req: IUser, res: Response) => {
-    try {
-      const { productId, quantity } = req.body;
-      if (!productId || !quantity) {
-        res.status(400).json({ message: "All fields are required" });
-        return;
-      }
-
-      const orderItem = await OrderItem.create({
-        userId: req.user?.id,
-        productId,
-        quantity,
-      });
-      res
-        .status(201)
-        .json({ code: 201, message: "Order item added", data: orderItem });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
-);
-
-/**
  * @route   PUT /order-items/:id
  * @desc    Update the user's order item
  * @access  User

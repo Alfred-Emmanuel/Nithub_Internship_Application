@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
 import { Order } from "../models";
+import { OrderItem } from "../../orderItem";
+import { Product } from "../../products";
 import { isAuthenticated } from "../../middlewares/current.user";
 import { IUser } from "../../core";
 
@@ -78,24 +80,77 @@ orderRouter.get(
  * @desc    Create a new order (User only)
  * @access  User
  */
-orderRouter.post("/", isAuthenticated, async (req: IUser, res: Response) => {
-  try {
-    const { items, totalPrice } = req.body;
-    if (!items || !totalPrice) {
-      res.status(400).json({ message: "All fields are required" });
-      return;
-    }
+orderRouter.post(
+  "/",
+  isAuthenticated,
+  async (req: IUser, res: Response): Promise<void> => {
+    try {
+      const { items, totalAmount } = req.body;
 
-    const order = await Order.create({
-      userId: req.user?.id,
-      items,
-      totalPrice,
-    });
-    res.status(201).json({ code: 201, message: "Order created", data: order });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+      if (
+        !items ||
+        !Array.isArray(items) ||
+        items.length === 0 ||
+        !totalAmount
+      ) {
+        res.status(400).json({ message: "Items and totalAmount are required" });
+        return;
+      }
+
+      // Extract all product IDs from the request body
+      const productIds = items.map(
+        (item: { productId: number }) => item.productId
+      );
+
+      // Check if all provided product IDs exist in the database
+      const existingProducts = await Product.findAll({
+        where: { id: productIds },
+        attributes: ["id"], // Only fetch the ID to optimize performance
+      });
+
+      const existingProductIds = new Set(
+        existingProducts.map((product) => product.id)
+      );
+
+      // Check for any invalid product IDs
+      const invalidProductIds = productIds.filter(
+        (id) => !existingProductIds.has(id)
+      );
+      if (invalidProductIds.length > 0) {
+        res.status(400).json({
+          message: `Invalid product IDs: ${invalidProductIds.join(", ")}`,
+        });
+        return;
+      }
+
+      // Create the order
+      const order = await Order.create({
+        userId: req.user?.id,
+        totalAmount,
+      });
+
+      // Create order items for each valid product in the order
+      const orderItems = await Promise.all(
+        items.map(async (item: { productId: number; quantity: number }) => {
+          return OrderItem.create({
+            orderId: order.id,
+            productId: item.productId,
+            quantity: item.quantity,
+          });
+        })
+      );
+
+      res.status(201).json({
+        code: 201,
+        message: "Order created",
+        data: { order, orderItems },
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
   }
-});
+);
+
 
 /**
  * @route   PUT /orders/:id
