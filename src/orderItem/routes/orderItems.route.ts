@@ -72,9 +72,15 @@ orderItemRouter.put(
   isAuthenticated,
   async (req: IUser, res: Response) => {
     try {
-      const orderItem = await OrderItem.findByPk(req.params.id);
-      if (!orderItem || orderItem.order?.userId !== req.user?.id) {
-        res.status(403).json({ message: "Unauthorized" });
+      const orderItem = await OrderItem.findByPk(req.params.id, {
+        include: [{ model: Order, as: "order" }],
+      });
+
+      console.log("OrderItem Data:", orderItem?.order?.userId);
+      console.log("User id:", req.user?.id);
+
+      if (!orderItem || Number(orderItem.order?.userId) !== Number(req.user?.id)) {
+        res.status(403).json({ message: `Unauthorized ${orderItem?.order}` });
         return;
       }
 

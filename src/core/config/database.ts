@@ -1,23 +1,16 @@
-import { Client } from "pg";
-import config from "./config";
+import { sequelize } from "./sequelize";
+import { syncDatabase } from "../../models/associations";
 
 const initializeDBConnection = async () => {
-  const client = new Client({
-    host: config.app.host,
-    port: config.db.postgresql.PORT,
-    user: config.db.postgresql.USER,
-    password: config.db.postgresql.USER_PASSWORD,
-    database: config.db.postgresql.DATABASE,
-  });
-
   try {
-    await client.connect();
+    await sequelize.authenticate(); // Test database connection
     console.log("Database Connected");
+    await syncDatabase();
 
-    return client;
+    return sequelize; // Return the Sequelize instance
   } catch (error) {
-    console.log("Error occured while connecting to the database: ", error);
-    throw new Error();
+    console.error("Error occurred while connecting to the database:", error);
+    throw new Error("Failed to connect to the database");
   }
 };
 

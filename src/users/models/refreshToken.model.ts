@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { User } from "./user.model";
-import { sequelize } from "../../core";
+import { sequelize } from "../../core/config/sequelize";
 
 class RefreshToken extends Model {
   public id!: number;

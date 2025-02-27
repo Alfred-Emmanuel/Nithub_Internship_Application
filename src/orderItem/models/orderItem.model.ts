@@ -1,5 +1,5 @@
 import { DataTypes, Model, Association } from "sequelize";
-import { sequelize } from "../../core";
+import { sequelize } from "../../core/config/sequelize";
 import { Order } from "../../orders";
 
 class OrderItem extends Model {

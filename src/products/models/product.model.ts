@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
-import { sequelize } from "../../core";
+import { sequelize } from "../../core/config/sequelize";
+
 
 class Product extends Model {
   public id!: number;

@@ -1,3 +1,4 @@
+import { sequelize } from "../core";
 import { User } from "../users";
 import { Order } from "../orders";
 import { Product } from "../products";
@@ -25,3 +26,15 @@ Order.belongsToMany(Product, {
 });
 
 OrderItem.belongsTo(Order, { foreignKey: "orderId", as: "order" });
+
+// Sync models with database
+const syncDatabase = async () => {
+  try {
+    await sequelize.sync({ alter: true }); // or { force: true } for dev
+    console.log("Database synced successfully");
+  } catch (error) {
+    console.error("Error syncing database:", error);
+  }
+};
+
+export { syncDatabase }
